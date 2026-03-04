@@ -1,27 +1,44 @@
 const express = require('express');
+const protect = require('../middleware/protect.middleware');
+const authorize = require('../middleware/authorize.middleware')
+const { 
+  getProfile, 
+  updateProfile, 
+  changePassword, 
+  deleteAccount, 
+  getAllUsers, 
+  getUserById, 
+  updateUserRole, 
+  deleteUserByAdmin, 
+} = require('../controllers/user.controller');
 const userRouter = express.Router();
 
+
+// Example route for getting all users (Admin only)
+userRouter.get('/', protect, authorize("admin"), getAllUsers);
+
+// Example route for getting a single user by ID (Admin only)
+userRouter.get('/:id', protect, authorize("admin"), getUserById);
+
 // Example route for getting user profile
-userRouter.get('/profile', (req, res) => {
-  // Logic to get user profile goes here
-  res.send('User profile endpoint');
-});
+userRouter.get('/profile', protect, getProfile);
 
-userRouter.get('/settings', (req, res) => {
-  // Logic to get user settings goes here
-  res.send('User settings endpoint');
-}); 
+// Example route for updating user profile 
+userRouter.post('/update', protect, updateProfile);
 
-userRouter.post('/update', (req, res) => {
-  // Logic to update user information goes here
-  res.send('User update endpoint');
-});
+// Example route for changing user password
+userRouter.put('/change-password', protect, changePassword);
 
-userRouter.delete('/delete', (req, res) => {
-  // Logic to delete user account goes here
-  res.send('User delete endpoint');
-});
+// Example route for deleting user account
 
-//
+userRouter.delete('/delete-account', protect, deleteAccount);
+
+// Example route for admin to update user role
+userRouter.put('/:id/role', protect, authorize("admin"), updateUserRole);
+
+// Example route for admin to delete a user
+userRouter.delete('/:id', protect, authorize("admin"), deleteUserByAdmin);
+
+
 
 module.exports = userRouter;
